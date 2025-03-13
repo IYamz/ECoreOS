@@ -1,5 +1,5 @@
 local rawURLTemp = "https://raw.githubusercontent.com/%s/%s/refs/heads/%s/%s" -- URL for the raw file data: User/Repo/Branch
-local gitURLTemp = "https://api.github.com/repos/%s/%s/git/trees/%s?=recursive=1" -- URL for the list of files in said repo: User/Repo/Branch
+local gitURLTemp = "https://api.github.com/repos/%s/%s/git/trees/%s?recursive=1" -- URL for the list of files in said repo: User/Repo/Branch
 
 local branch = "main" -- Default branch
 
