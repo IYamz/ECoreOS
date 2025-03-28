@@ -1,4 +1,6 @@
 local gui = {}
+gui.buttons = {}
+gui.buttons.list = {}
 
 gui.primary = nil
 gui.w = nil
@@ -14,6 +16,10 @@ function gui.setPrimary(screen, bg, fg)
     gui.w,gui.h = screen.getSize()
     gui.primaryBG = bg or colors.black
     gui.primaryFG = fg or colors.white
+
+    screen.setBackgroundColor(gui.primaryBG)
+    screen.setTextColor(gui.primaryFG)
+    screen.clear()
 
     return 0
 end
@@ -117,6 +123,76 @@ function gui.printFormatted(...)
         end
     end
     skip()
+end
+
+function gui.buttons.add(label, data)
+    if not label then print("Button must have a label!") return end
+    if type(label) ~= "string" then print("Object label must be a string!") return end
+    if data and type(data) ~= "table" then print("Object data must be a table!") return end
+    if not data then data = {} end
+
+    local newButton = {}
+    newButton.label = label
+    newButton.text = data.text or "Button"
+    newButton.on_click = data.on_click or function() end
+    newButton.x = data.x or 1
+    newButton.y = data.y or 1
+    newButton.bg_color = data.bg_color or colors.blue
+    newButton.fg_color = data.fg_color or colors.white
+    newButton.hl_color = data.hl_color or colors.lightBlue
+    newButton.do_shadow = data.do_shadow or 1
+
+
+    gui.buttons.list[label] = newButton
+end
+
+local function drawButton(label, hl)
+    local button = gui.buttons.list[label]
+    if not button then print("Button '" .. label .. "' not found!") return end
+
+    gui.setPos(button.x, button.y)
+    gui.setBG(hl == true and button.hl_color or button.bg_color)
+    gui.setFG(button.fg_color)
+    gui.write(" " .. button.text .. " ")
+    gui.setBG(gui.primaryBG)
+    gui.setFG(gui.primaryFG)
+    if button.do_shadow == 1 then
+        gui.setFG(colors.black)
+        gui.write(string.char(148))
+        gui.setPos(button.x, button.y + 1)
+        gui.write(string.char(130))
+        for i = 1, string.len(" " .. button.text .. " ") - 1 do
+            gui.write(string.char(131))
+        end
+        gui.write(string.char(129))
+        gui.setFG(gui.primaryFG)
+    end
+end
+
+local function hlButton(label)
+    drawButton(label, true)
+    sleep(0.1)
+    drawButton(label, false)
+end
+
+function gui.buttons.draw()
+    for i,button in pairs(gui.buttons.list) do
+        drawButton(button.label)
+    end
+end
+
+function gui.update()
+    while true do
+        local event, button, x, y = os.pullEvent("mouse_click")
+        if event == "mouse_click" or "monitor_touch" then
+            for i,button in pairs(gui.buttons.list) do
+                if x >= button.x and x <= button.x + button.text:len() + 1 and y == button.y then
+                    hlButton(button.label)
+                    button.on_click()
+                end
+            end
+        end
+    end
 end
 
 return gui
