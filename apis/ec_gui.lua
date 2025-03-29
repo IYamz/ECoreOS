@@ -137,11 +137,16 @@ function gui.buttons.add(label, data)
     newButton.on_click = data.on_click or function() end
     newButton.x = data.x or 1
     newButton.y = data.y or 1
+    if newButton.x == true then
+        newButton.x = math.floor(gui.w / 2 - string.len(" " .. newButton.text .. " ") / 2)
+    end
+    if newButton.y == true then
+        newButton.y = math.floor(gui.h / 2)
+    end
     newButton.bg_color = data.bg_color or colors.blue
     newButton.fg_color = data.fg_color or colors.white
     newButton.hl_color = data.hl_color or colors.lightBlue
     newButton.do_shadow = data.do_shadow or 1
-
 
     gui.buttons.list[label] = newButton
 end
