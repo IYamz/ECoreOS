@@ -1,6 +1,8 @@
 local gui = {}
 gui.buttons = {}
 gui.buttons.list = {}
+gui.inputs = {}
+gui.inputs.list = {}
 
 gui.primary = nil
 gui.w = nil
@@ -186,6 +188,63 @@ function gui.buttons.draw()
     end
 end
 
+function gui.inputs.add(label, data)
+    if not label then print("Input must have a label!") return end
+    if type(label) ~= "string" then print("Input label must be a string!") return end
+    if data and type(data) ~= "table" then print("Input data must be a table!") return end
+    if not data then data = {} end
+
+    local newInput = {}
+    newInput.current = ""
+    newInput.label = label
+    newInput.text = data.text or "Input"
+    newInput.show_text = data.show_text or 0
+    newInput.text_side = data.text_side or "left"
+    newInput.x = data.x or 1
+    newInput.y = data.y or 1
+    newInput.length = data.length or 10
+    if newInput.x == true then
+        newInput.x = math.floor(gui.w / 2 - newInput.length / 2)
+    end
+    if newInput.y == true then
+        newInput.y = math.floor(gui.h / 2)
+    end
+    newInput.bg_color = data.bg_color or colors.lightGray
+    newInput.fg_color = data.fg_color or colors.white
+
+    gui.inputs.list[label] = newInput
+end
+
+local function drawInput(label)
+    local input = gui.inputs.list[label]
+    if not input then print("Input '" .. label .. "' not found!") return end
+
+    gui.setPos(input.x, input.y)
+    gui.setBG(input.bg_color)
+    for i = 1, input.length do
+        write(" ")
+    end
+    gui.setBG(gui.primaryBG)
+    if input.show_text == 1 then
+        if input.text_side == "left" then
+            gui.setPos(input.x - input.text:len() - 1, input.y)
+        elseif input.text_side == "right" then
+            gui.setPos(input.x + input.length + 1, input.y)
+        elseif input.text_side == "top" then
+            gui.setPos(input.x, input.y - 1)
+        elseif input.text_side == "bottom" then
+            gui.setPos(input.x, input.y + 1)
+        end
+        gui.write(input.text)
+    end
+end
+
+function gui.inputs.draw()
+    for i,input in pairs(gui.inputs.list) do
+        drawInput(input.label)
+    end
+end
+
 function gui.update()
     while true do
         local event, button, x, y = os.pullEvent("mouse_click")
@@ -194,6 +253,17 @@ function gui.update()
                 if x >= button.x and x <= button.x + button.text:len() + 1 and y == button.y then
                     hlButton(button.label)
                     button.on_click()
+                end
+            end
+            for i,input in pairs(gui.inputs.list) do
+                if x >= input.x and x <= input.x + input.length and y == input.y then
+                    gui.setPos(input.x, input.y)
+                    gui.setBG(input.bg_color)
+                    gui.setFG(input.fg_color)
+                    local userInput = read()
+                    input.current = userInput
+                    gui.setBG(gui.primaryBG)
+                    gui.setFG(gui.primaryFG)
                 end
             end
         end
