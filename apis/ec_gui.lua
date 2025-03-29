@@ -151,6 +151,8 @@ function gui.buttons.add(label, data)
     newButton.do_shadow = data.do_shadow or 1
 
     gui.buttons.list[label] = newButton
+
+    return gui.buttons.list[label]
 end
 
 local function drawButton(label, hl)
@@ -214,6 +216,8 @@ function gui.inputs.add(label, data)
     newInput.fg_color = data.fg_color or colors.white
 
     gui.inputs.list[label] = newInput
+
+    return gui.inputs.list[label]
 end
 
 local function drawInput(label)
@@ -258,6 +262,8 @@ function gui.update()
             end
             for i,input in pairs(gui.inputs.list) do
                 if x >= input.x and x <= input.x + input.length and y == input.y then
+                    input.current = ""
+                    drawInput(input.label)
                     gui.setPos(input.x, input.y)
                     gui.setBG(input.bg_color)
                     gui.setFG(input.fg_color)
