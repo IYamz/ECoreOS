@@ -203,6 +203,7 @@ function gui.inputs.add(label, data)
     newInput.x = data.x or 1
     newInput.y = data.y or 1
     newInput.length = data.length or 10
+    newInput.hide = data.hide or 0
     if newInput.x == true then
         newInput.x = math.floor(gui.w / 2 - newInput.length / 2)
     end
@@ -260,7 +261,7 @@ function gui.update()
                     gui.setPos(input.x, input.y)
                     gui.setBG(input.bg_color)
                     gui.setFG(input.fg_color)
-                    local userInput = read()
+                    local userInput = read(input.hide == 1 and "*" or nil)
                     input.current = userInput
                     gui.setBG(gui.primaryBG)
                     gui.setFG(gui.primaryFG)
