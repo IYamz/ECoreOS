@@ -89,7 +89,7 @@ function gui.centerWrite(text, line, offset)
     if line == true then
         line = gui.h / 2 + offset
     end
-    gui.setPos(math.ceil(gui.w / 2 - string.len(text) / 2), line)
+    gui.setPos(math.floor(gui.w / 2 - string.len(text) / 2), line)
     gui.write(text)
 end
 
